@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naruto Character Bidding War</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen p-4">
+
+<div class="max-w-6xl mx-auto space-y-6">
+
+<!-- Header -->
+<header class="text-center bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-md">
+<h1 class="text-2xl md:text-3xl font-extrabold text-orange-500 tracking-wider">NARUTO CHARACTER BIDDING WAR</h1>
+<p class="text-slate-400 text-xs md:text-sm mt-1">Draft 5 powerful characters each. Start bid at ₹1 (increments of ₹0.5 or custom bids). 2 passes allowed.</p>
+</header>
+
+<!-- Main Game Arena -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+<!-- PLAYER 1 COLUMN -->
+<div class="bg-slate-900 p-5 rounded-xl border border-blue-600/40 shadow-lg flex flex-col justify-between space-y-4">
+<div>
+<div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
+<h2 class="font-bold text-blue-400 text-lg">Player 1</h2>
+<div class="text-right">
+<span class="text-xs text-slate-400 block">Budget</span>
+<span class="text-xl font-bold text-green-400">₹<span id="p1-budget">50.0</span></span>
+</div>
+</div>
+<div class="flex justify-between items-center text-xs text-slate-400 mb-4">
+<span>Passes left: <strong id="p1-passes" class="text-white">2</strong></span>
+<span>Team: <strong id="p1-count" class="text-white">0/5</strong></span>
+</div>
+
+<!-- P1 Bidding Controls -->
+<div class="space-y-2 bg-slate-950 p-3 rounded-lg border border-slate-800">
+<p class="text-xs font-semibold text-blue-300 text-center mb-1">Player 1 Bidding Actions</p>
+<button onclick="placeBid(1, 0.5)" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded transition cursor-pointer">
+Bid +₹0.5
+</button>
+<div class="flex gap-2">
+<input type="number" id="p1-custom-input" placeholder="Custom ₹" step="0.5" min="1" class="w-2/3 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white">
+<button onclick="placeCustomBid(1)" class="w-1/3 bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold py-1 px-2 rounded cursor-pointer">
+Bid
+</button>
+</div>
+<button onclick="passCharacter(1)" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-1.5 rounded cursor-pointer">
+Pass / Skip (Uses Pass)
+</button>
+<button onclick="sellCharacter(1)" class="w-full bg-green-600 hover:bg-green-500 text-white text-xs font-bold py-2 rounded shadow transition cursor-pointer mt-2">
+Sell Character to P1
+</button>
+</div>
+</div>
+
+<!-- P1 Inventory -->
+<div class="mt-4">
+<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">P1 Inventory</h3>
+<div id="p1-inventory" class="space-y-1.5 min-h-[120px] max-h-[180px] overflow-y-auto pr-1">
+<p class="text-xs text-slate-600 italic">No characters yet.</p>
+</div>
+</div>
+</div>
+
+<!-- CENTER: CURRENT CHARACTER & BID STATUS -->
+<div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-xl flex flex-col justify-between text-center">
+<div>
+<div class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-1">
+Draft Round <span id="current-round">1</span> of 10
+</div>
+
+<!-- Character Card -->
+<div class="bg-slate-950 p-5 rounded-xl border border-orange-500/30 shadow-inner my-4">
+<h2 id="char-name" class="text-xl md:text-2xl font-extrabold text-yellow-400 mb-1">Naruto Uzumaki</h2>
+<p id="char-rank" class="text-xs text-slate-400 uppercase tracking-wide mb-3">Rank: God-Class</p>
+<div class="flex justify-center gap-6 text-sm">
+<div>Power: <span id="char-power" class="font-bold text-orange-400 text-base">98</span></div>
+</div>
+</div>
+
+<!-- Live Bidding Status -->
+<div class="bg-slate-950 p-4 rounded-lg border border-slate-800 space-y-2">
+<div class="text-xs text-slate-400">Current Bid Amount</div>
+<div class="text-3xl font-extrabold text-green-400">₹<span id="current-bid">1.0</span></div>
+<div class="text-xs text-slate-300">Highest Bidder: <span id="current-leader" class="font-bold text-yellow-300">None yet</span></div>
+</div>
+</div>
+
+<p id="game-msg" class="text-xs text-orange-300 mt-3 h-4"></p>
+</div>
+
+<!-- PLAYER 2 COLUMN -->
+<div class="bg-slate-900 p-5 rounded-xl border border-rose-600/40 shadow-lg flex flex-col justify-between space-y-4">
+<div>
+<div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
+<h2 class="font-bold text-rose-400 text-lg">Player 2</h2>
+<div class="text-right">
+<span class="text-xs text-slate-400 block">Budget</span>
+<span class="text-xl font-bold text-green-400">₹<span id="p2-budget">50.0</span></span>
+</div>
+</div>
+<div class="flex justify-between items-center text-xs text-slate-400 mb-4">
+<span>Passes left: <strong id="p2-passes" class="text-white">2</strong></span>
+<span>Team: <strong id="p2-count" class="text-white">0/5</strong></span>
+</div>
+
+<!-- P2 Bidding Controls -->
+<div class="space-y-2 bg-slate-950 p-3 rounded-lg border border-slate-800">
+<p class="text-xs font-semibold text-rose-300 text-center mb-1">Player 2 Bidding Actions</p>
+<button onclick="placeBid(2, 0.5)" class="w-full bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold py-2 px-3 rounded transition cursor-pointer">
+Bid +₹0.5
+</button>
+<div class="flex gap-2">
+<input type="number" id="p2-custom-input" placeholder="Custom ₹" step="0.5" min="1" class="w-2/3 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white">
+<button onclick="placeCustomBid(2)" class="w-1/3 bg-rose-700 hover:bg-rose-600 text-white text-xs font-bold py-1 px-2 rounded cursor-pointer">
+Bid
+</button>
+</div>
+<button onclick="passCharacter(2)" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-1.5 rounded cursor-pointer">
+Pass / Skip (Uses Pass)
+</button>
+<button onclick="sellCharacter(2)" class="w-full bg-green-600 hover:bg-green-500 text-white text-xs font-bold py-2 rounded shadow transition cursor-pointer mt-2">
+Sell Character to P2
+</button>
+</div>
+</div>
+
+<!-- P2 Inventory -->
+<div class="mt-4">
+<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">P2 Inventory</h3>
+<div id="p2-inventory" class="space-y-1.5 min-h-[120px] max-h-[180px] overflow-y-auto pr-1">
+<p class="text-xs text-slate-600 italic">No characters yet.</p>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- Result Modal / Screen (Hidden initially) -->
+<div id="result-screen" class="hidden bg-slate-900 p-8 rounded-xl border border-slate-800 text-center max-w-xl mx-auto space-y-4">
+<h2 class="text-3xl font-extrabold text-orange-500">Draft Completed! Battle Results</h2>
+<div id="winner-announcement" class="text-xl font-bold text-yellow-300"></div>
+
+<div class="grid grid-cols-2 gap-4 text-left text-sm mt-4">
+<div class="bg-slate-950 p-4 rounded-lg border border-blue-500/30">
+<h5 class="font-bold text-blue-400 mb-1">Player 1 Total Power</h5>
+<p id="p1-final-power" class="text-2xl font-extrabold text-white">0</p>
+<p class="text-xs text-slate-400 mt-1">Leftover Budget: ₹<span id="p1-final-budget">0</span></p>
+</div>
+<div class="bg-slate-950 p-4 rounded-lg border border-rose-500/30">
+<h5 class="font-bold text-rose-400 mb-1">Player 2 Total Power</h5>
+<p id="p2-final-power" class="text-2xl font-extrabold text-white">0</p>
+<p class="text-xs text-slate-400 mt-1">Leftover Budget: ₹<span id="p2-final-budget">0</span></p>
+</div>
+</div>
+
+<button onclick="location.reload()" class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-2.5 px-8 rounded-lg transition mt-4 cursor-pointer">
+Play Again
+</button>
+</div>
+
+</div>
+
+<script>
+// High-powered Naruto characters pool only
+const powerfulNarutoPool = [
+{ name: "Naruto Uzumaki (Sage/KCM)", rank: "God-Class", power: 98 },
+{ name: "Sasuke Uchiha (EMS/Rinnegan)", rank: "God-Class", power: 99 },
+{ name: "Madara Uchiha (Ten-Tails)", rank: "God-Class", power: 100 },
+{ name: "Hashirama Senju", rank: "God-Class", power: 97 },
+{ name: "Kakashi Hatake (DMS)", rank: "S-Class", power: 95 },
+{ name: "Itachi Uchiha", rank: "S-Class", power: 94 },
+{ name: "Minato Namikaze", rank: "S-Class", power: 96 },
+{ name: "Pain (Tendou)", rank: "S-Class", power: 90 },
+{ name: "Obito Uchiha", rank: "S-Class", power: 93 },
+{ name: "Jiraiya (Sage Mode)", rank: "S-Class", power: 89 },
+{ name: "Killer Bee", rank: "S-Class", power: 88 },
+{ name: "Tobirama Senju", rank: "S-Class", power: 92 },
+{ name: "Izuna Uchiha", rank: "S-Class", power: 91 },
+{ name: "Sage Kabuto", rank: "S-Class", power: 88 },
+{ name: "Shisui Uchiha", rank: "S-Class", power: 92 }
+ ];
+
+let gameCharacters = [];
+let currentRound = 0;
+let currentBid = 1.0;
+let currentLeader = null; // 1 or 2
+
+let p1 = { budget: 50.0, passes: 2, team: [] };
+let p2 = { budget: 50.0, passes: 2, team: [] };
+
+// Start game immediately on script load
+window.onload = function() {
+gameCharacters = [...powerfulNarutoPool].sort(() => 0.5 - Math.random()).slice(0, 10);
+currentRound = 0;
+loadCharacter();
+};
+
+function loadCharacter() {
+if (currentRound >= 10 || (p1.team.length >= 5 && p2.team.length >= 5)) {
+endGame();
+return;
+}
+
+currentBid = 1.0;
+currentLeader = null;
+
+let char = gameCharacters[currentRound];
+document.getElementById('current-round').innerText = currentRound + 1;
+document.getElementById('char-name').innerText = char.name;
+document.getElementById('char-rank').innerText = "Rank: " + char.rank;
+document.getElementById('char-power').innerText = char.power;
+
+updateUI();
+}
+
+function updateUI() {
+document.getElementById('p1-budget').innerText = p1.budget.toFixed(1);
+document.getElementById('p2-budget').innerText = p2.budget.toFixed(1);
+document.getElementById('p1-passes').innerText = p1.passes;
+document.getElementById('p2-passes').innerText = p2.passes;
+
+document.getElementById('current-bid').innerText = currentBid.toFixed(1);
+document.getElementById('current-leader').innerText = currentLeader ? Player ${currentLeader}` : "None yet";
+
+renderInventories();
+}
+
+function placeBid(playerNum, increment) {
+let player = playerNum === 1 ? p1 : p2;
+let newBid = currentBid + increment;
+
+if (player.budget < newBid) {
+alert(Player${playerNum} doesn't have enough budget for ₹${newBid.toFixed(1)}!);
+return;
+}
+
+currentBid = newBid;
+currentLeader = playerNum;
+updateUI();
+}
+
+function placeCustomBid(playerNum) {
+let inputElem = document.getElementById(p1-custom-input);
+if (playerNum === 2) {
+inputElem = document.getElementById(p2-custom-input);
+}
+
+let val = parseFloat(inputElem.value);
+let player = playerNum === 1 ? p1 : p2;
+
+if (isNaN(val) || val <= currentBid) {
+alert(Custom bid must be greater than current bid (₹${currentBid.toFixed(1)})!`);
+return;
+}
+
+if (player.budget < val) {
+alert(Player ${playerNum} doesn't have ₹${val} in their budget!);
+return;
+}
+
+currentBid = val;
+currentLeader = playerNum;
+inputElem.value = "";
+updateUI();
+}
+
+function passCharacter(playerNum) {
+let player = playerNum === 1 ? p1 : p2;
+if (player.passes <= 0) {
+alert(Player ${playerNum} has no passes left!`);
+return;
+}
+
+player.passes--;
+document.getElementById('game-msg').innerText = Player${playerNum} passed this round!`;
+
+setTimeout(() => {
+document.getElementById('game-msg').innerText = "";
+currentRound++;
+loadCharacter();
+}, 1000);
+}
+
+function sellCharacter(playerNum) {
+let targetPlayer = playerNum === 1 ? p1 : p2;
+let char = gameCharacters[currentRound];
+
+if (targetPlayer.team.length >= 5) {
+alert(Player ${playerNum}'s team is already full (5 characters)!`);
+return;
+}
+
+if (targetPlayer.budget < currentBid) {
+alert(Player${playerNum} does not have enough budget (₹${currentBid.toFixed(1)}) to buy this character!);
+return;
+}
+
+// Deduct budget & add character with its final winning cost
+targetPlayer.budget -= currentBid;
+targetPlayer.team.push({ ...char, cost: currentBid });
+
+currentRound++;
+loadCharacter();
+}
+
+function renderInventories() {
+// P1
+let p1InvHtml = p1.team.length === 0 ? '<p class="text-xs text-slate-600 italic">No characters yet.</p>' : '';
+p1.team.forEach(c => {
+p1InvHtml += <div class="bg-slate-950 p-2 rounded text-xs flex justify-between items-center border border-slate-800"&gt; &lt;span class="font-semibold text-yellow-300 truncate max-w-[100px]"&gt;${c.name}</span>
+<span class="text-orange-400">Pwr:{c.cost})</span>
+</div>; }); document.getElementById('p1-inventory').innerHTML = p1InvHtml; document.getElementById('p1-count').innerText =${p1.team.length}/5;
+
+// P2
+let p2InvHtml = p2.team.length === 0 ? '<p class="text-xs text-slate-600 italic">No characters yet.</p>' : '';
+p2.team.forEach(c => {
+p2InvHtml += <div class="bg-slate-950 p-2 rounded text-xs flex justify-between items-center border border-slate-800"&gt; &lt;span class="font-semibold text-yellow-300 truncate max-w-[100px]"&gt;${c.name}</span>
+<span class="text-orange-400">Pwr:{c.cost})</span>
+</div>; }); document.getElementById('p2-inventory').innerHTML = p2InvHtml; document.getElementById('p2-count').innerText =${p2.team.length}/5`;
+}
+
+function endGame() {
+document.querySelector('.grid').classList.add('hidden');
+document.querySelector('header').classList.add('hidden');
+document.getElementById('result-screen').classList.remove('hidden');
+
+let p1Power = p1.team.reduce((sum, c) => sum + c.power, 0);
+let p2Power = p2.team.reduce((sum, c) => sum + c.power, 0);
+
+document.getElementById('p1-final-power').innerText = p1Power;
+document.getElementById('p2-final-power').innerText = p2Power;
+document.getElementById('p1-final-budget').innerText = p1.budget.toFixed(1);
+document.getElementById('p2-final-budget').innerText = p2.budget.toFixed(1);
+
+let winnerText = "";
+if (p1Power > p2Power) {
+winnerText = "🎉 Player 1's Team Wins the Power Battle!";
+} else if (p2Power > p1Power) {
+winnerText = "🎉 Player 2's Team Wins the Power Battle!";
+} else {
+winnerText = "🤝 It's a Tie Power Battle!";
+}
+
+document.getElementById('winner-announcement').innerText = winnerText;
+}
+</script>
+</body>
+</html>
